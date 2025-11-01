@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET Launch HRSYS.API",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/HRSYS.API/bin/Debug/net9.0/HRSYS.API.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/HRSYS.API",
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
