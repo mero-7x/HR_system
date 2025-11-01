@@ -40,9 +40,6 @@ namespace HRSYS.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
 
-                    b.Property<int?>("ManagerEmployeeId")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("ManagerId")
                         .HasColumnType("integer");
 
@@ -52,8 +49,6 @@ namespace HRSYS.Infrastructure.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ManagerEmployeeId");
 
                     b.HasIndex("ManagerId")
                         .IsUnique();
@@ -185,6 +180,9 @@ namespace HRSYS.Infrastructure.Migrations
                     b.Property<int?>("EmployeeId1")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("EmployeeId2")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -211,24 +209,20 @@ namespace HRSYS.Infrastructure.Migrations
                     b.HasIndex("EmployeeId1")
                         .IsUnique();
 
+                    b.HasIndex("EmployeeId2")
+                        .IsUnique();
+
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("HRSYS.Domain.Entities.Department", b =>
                 {
-                    b.HasOne("HRSYS.Domain.Entities.Employee", "ManagerEmployee")
-                        .WithMany()
-                        .HasForeignKey("ManagerEmployeeId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("HRSYS.Domain.Entities.User", "Manager")
                         .WithOne("ManagedDepartment")
                         .HasForeignKey("HRSYS.Domain.Entities.Department", "ManagerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Manager");
-
-                    b.Navigation("ManagerEmployee");
                 });
 
             modelBuilder.Entity("HRSYS.Domain.Entities.Employee", b =>
@@ -262,13 +256,17 @@ namespace HRSYS.Infrastructure.Migrations
             modelBuilder.Entity("HRSYS.Domain.Entities.User", b =>
                 {
                     b.HasOne("HRSYS.Domain.Entities.Employee", "Employee")
-                        .WithOne("User")
+                        .WithOne()
                         .HasForeignKey("HRSYS.Domain.Entities.User", "EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("HRSYS.Domain.Entities.Employee", null)
                         .WithOne("Managername")
                         .HasForeignKey("HRSYS.Domain.Entities.User", "EmployeeId1");
+
+                    b.HasOne("HRSYS.Domain.Entities.Employee", null)
+                        .WithOne("User")
+                        .HasForeignKey("HRSYS.Domain.Entities.User", "EmployeeId2");
 
                     b.Navigation("Employee");
                 });

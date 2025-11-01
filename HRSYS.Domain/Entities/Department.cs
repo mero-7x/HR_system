@@ -9,9 +9,9 @@ namespace HRSYS.Domain.Entities
 
 
         public int? ManagerId { get; set; }        
-        public int? ManagerEmployeeId { get; set; } 
+        // public int? ManagerEmployeeId { get; set; } 
         public User? Manager { get; set; }
-        public Employee? ManagerEmployee { get; set; }  
+        // public Employee? ManagerEmployee { get; set; }  
 
 
 

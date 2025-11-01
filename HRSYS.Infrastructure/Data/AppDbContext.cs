@@ -30,17 +30,17 @@ namespace HRSYS.Infrastructure.Data
                 }
             }
 
-            modelBuilder.Entity<Employee>()
-            .HasOne(e => e.User)
-             .WithOne(u => u.Employee)
-             .HasForeignKey<User>(u => u.EmployeeId)
-             .OnDelete(DeleteBehavior.SetNull);
+            // modelBuilder.Entity<Employee>()
+            // .HasOne(e => e.User)
+            //  .WithOne(u => u.Employee)
+            //  .HasForeignKey<User>(u => u.EmployeeId)
+            //  .OnDelete(DeleteBehavior.SetNull);
 
-            modelBuilder.Entity<User>()
-            .HasOne(u => u.Employee)
-            .WithOne(e => e.User)
-            .HasForeignKey<User>(u => u.EmployeeId)
-            .OnDelete(DeleteBehavior.Restrict);
+            // modelBuilder.Entity<User>()
+            // .HasOne(u => u.Employee)
+            // .WithOne(e => e.User)
+            // .HasForeignKey<User>(u => u.EmployeeId)
+            // .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Department>()
                  .HasOne(d => d.Manager)

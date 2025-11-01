@@ -39,42 +39,44 @@ namespace HRSYS.Application.Services
 
         public async Task<LeaveDto> CreateLeaveAsync(LeaveReqDto dto, CancellationToken ct)
         {
-            // 1️⃣ نحصل على المستخدم الحالي
+           
             var userId = _currentUser.UserId;
             if (userId == null)
                 throw new UnauthorizedAccessException("User ID not found in current context.");
 
-            // 2️⃣ نجيب الموظف المرتبط بالمستخدم الحالي
-            var emp = await _empRepo.GetByUserIdAsync(userId.Value, ct);
-            if (emp == null)
-                throw new KeyNotFoundException("Employee not found for this user.");
+            
+            var user = await _userRepo.GetByIdWithEmployeeAsync(userId.Value, ct)
+                ?? throw new KeyNotFoundException("User not found.");
 
-            // 3️⃣ نتحقق من حالة الحساب
-            if (emp.User == null || !emp.User.IsActive)
-                throw new InvalidOperationException("Inactive users cannot request leave.");
+            var employee = user.Employee
+                ?? throw new KeyNotFoundException("Employee not found for this user.");
 
-            // 4️⃣ نتحقق من التواريخ
+       
+            if (!user.IsActive)
+                throw new ValidationException("Inactive users cannot request leave.");
+
+         
             if (dto.StartDate.Date >= dto.EndDate.Date)
-                throw new ArgumentException("End date must be after start date.");
+                throw new ValidationException("End date must be after start date.");
 
             if (dto.StartDate.Date < DateTime.UtcNow.Date)
-                throw new ArgumentException("Start date cannot be in the past.");
+                throw new ValidationException("Start date cannot be in the past.");
 
-            // 5️⃣ نتحقق أن الموظف عنده مدير فعلي
-            if (emp.ManagerId == null)
-                throw new InvalidOperationException("This employee does not have an assigned manager.");
+         
+            if (employee.DepartmentId == 0)
+                throw new ValidationException("Employee is not assigned to any department.");
 
-            var manager = await _empRepo.GetByIdWithUserAsync(emp.ManagerId.Value, ct);
-            if (manager == null || manager.User == null || !manager.User.IsActive)
-                throw new InvalidOperationException("Assigned manager is invalid or inactive.");
+         
+            if (employee.ManagerId == null)
+                throw new ValidationException("This employee does not have an assigned manager.");
 
-          
-            // if (emp.DepartmentId == null)
-            //     throw new InvalidOperationException("Employee is not assigned to any department.");
+            
 
+        
             var leave = LeaveMapper.ToEntity(dto, ct);
-            leave.EmployeeId = emp.Id;
-            leave.Status = LeaveStatus.Pending; 
+            leave.EmployeeId = employee.Id;
+            leave.Status = LeaveStatus.Pending;
+            
 
             await _LeaveRepo.AddAsync(leave, ct);
             await _unitofWork.SaveChangesAsync(ct);
@@ -120,15 +122,15 @@ namespace HRSYS.Application.Services
 
 
                 leave.ManagerComments = dto.RejectReason;
-              
+
                 leave.ManagerRejectDate = DateTime.UtcNow;
                 leave.ByManagerId = managerid;
             }
             else
             {
-               
+
                 leave.ByManagerId = managerid;
-                leave.ManagerApprovalDate = DateTime.UtcNow; 
+                leave.ManagerApprovalDate = DateTime.UtcNow;
 
             }
 

@@ -46,7 +46,7 @@ namespace HRSYS.Application.Services
             var existingUser = await _userRepo.GetByUsernameAsync(dto.username, ct);
             if (existingUser != null)
             {
-                throw new Exception("Username already exists");
+                throw new ValidationException("Username already exists");
 
             }
 
@@ -106,7 +106,7 @@ namespace HRSYS.Application.Services
             if (user.IsActive == true)
                 throw new ValidationException("User already active.");
 
-            if (dep.ManagerEmployeeId.HasValue && dep.ManagerEmployeeId != user.EmployeeId && dto.Role == Role.Manager)
+            if (dep.ManagerId.HasValue && dep.ManagerId != user.EmployeeId && dto.Role == Role.Manager)
                 throw new ValidationException("This department already has a manager assigned.");
 
             if (user.Employee != null && user.Employee.DepartmentId == dto.DepartmentId)
@@ -150,8 +150,8 @@ namespace HRSYS.Application.Services
 
                 if (dto.Role == Role.Employee)
                 {
-                    if (dep.ManagerEmployeeId.HasValue)
-                        employee.ManagerId = dep.ManagerEmployeeId.Value;
+                    if (dep.ManagerId.HasValue)
+                        employee.ManagerId = dep.ManagerId;
 
                     await _empRepo.UpdateAsync(employee, ct);
                 }
@@ -196,34 +196,40 @@ namespace HRSYS.Application.Services
 
             try
             {
-                if (dto.NewUserId == dep.ManagerId && dto.NewEmployeeId == dep .ManagerEmployeeId)
+                if (dep.ManagerId.HasValue && dep.ManagerId == dto.NewUserId)
                     throw new ValidationException(" its alruday manager");
-                
-                    
-                
 
-                if (dep.ManagerEmployeeId.HasValue)
+
+
+
+                if (dep.ManagerId.HasValue)
                 {
-                    var oldManagerEmpId = dep.ManagerEmployeeId.Value;
-                    var oldManager = await _empRepo.GetByIdWithUserAsync(oldManagerEmpId, ct);
 
-                    if (oldManager?.User != null)
+                   var oldManagerUser = await _userRepo.GetByIdWithEmployeeAsync(dep.ManagerId.Value, ct);
+
+
+                    if (oldManagerUser != null)
                     {
-                        oldManager.User.Role = Role.Employee;
-                        await _userRepo.UpdateAsync(oldManager.User, ct);
+                        oldManagerUser.Role = Role.Employee;
+                        await _userRepo.UpdateAsync(oldManagerUser, ct);
 
-                        oldManager.ManagerId = null;
-                        await _empRepo.UpdateAsync(oldManager, ct);
+                        if (oldManagerUser.Employee != null)
+                        {
+                            oldManagerUser.Employee.ManagerId = null;
+                            await _empRepo.UpdateAsync(oldManagerUser.Employee, ct);
+                        }
                     }
                 }
 
                 dep.ManagerId = dto.NewUserId;
-                dep.ManagerEmployeeId = dto.NewEmployeeId;
                 await _Deprepo.UpdateAsync(dep, ct);
 
                 var newManagerUser = await _userRepo.GetByIdAsync(dto.NewUserId, ct);
                 if (newManagerUser == null)
                     throw new KeyNotFoundException("New manager user not found.");
+
+                if (!newManagerUser.IsActive)
+                    throw new ValidationException(" user avtive first before Assign manager");
 
                 newManagerUser.Role = Role.Manager;
                 await _userRepo.UpdateAsync(newManagerUser, ct);
@@ -231,7 +237,7 @@ namespace HRSYS.Application.Services
                 var employeesInDep = await _empRepo.GetByDepartmentIdAsync(dto.DepartmentId, ct);
                 foreach (var emp in employeesInDep)
                 {
-                    emp.ManagerId = emp.Id == dto.NewEmployeeId ? null : dto.NewEmployeeId;
+                    emp.ManagerId = emp.Id == dto.NewUserId ? null : dto.NewUserId;
                     await _empRepo.UpdateAsync(emp, ct);
                 }
 

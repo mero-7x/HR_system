@@ -15,11 +15,11 @@ namespace HRSYS.Infrastructure.Data.Configurations
             builder.Property(u => u.CreatedAt)
                   .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder.HasOne(d => d.ManagerEmployee)
-           .WithMany()
-           .HasForeignKey(d => d.ManagerEmployeeId)
-           .OnDelete(DeleteBehavior.SetNull);
-
+            
+               builder.HasOne(d => d.Manager)
+           .WithOne(u => u.ManagedDepartment)
+                      .HasForeignKey<Department>(d => d.ManagerId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(u => u.IsActive)
            .HasDefaultValue(true);
