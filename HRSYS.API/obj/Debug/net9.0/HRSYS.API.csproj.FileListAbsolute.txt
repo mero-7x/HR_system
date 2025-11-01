@@ -147,3 +147,4 @@
 /root/HRSYS/HRSYS.API/obj/Debug/net9.0/rjsmrazor.dswa.cache.json
 /root/HRSYS/HRSYS.API/obj/Debug/net9.0/rjsmcshtml.dswa.cache.json
 /root/HRSYS/HRSYS.API/obj/Debug/net9.0/staticwebassets.build.json.cache
+/root/HRSYS/HRSYS.API/obj/Debug/net9.0/HRSYS.API.sourcelink.json
