@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "X3fYX2AQ9PqVxMQXWbl+Hqfc5PlndmMRYf0v3MjhuHk=",
+  "Source": "HRSYS.API",
+  "BasePath": "_content/HRSYS.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
