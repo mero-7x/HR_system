@@ -18,6 +18,7 @@ namespace HRSYS.API.Controllers
         }
         // add Employee
         [HttpPost("activate")]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> Activate([FromBody] ActivateUserDto dto, CancellationToken ct)
         {
             var emp = await _userService.ActivateUserAsync(dto, ct);
@@ -41,6 +42,7 @@ namespace HRSYS.API.Controllers
 
 
         [HttpGet("GetAllUsers")]
+        [Authorize(Roles = "HR")]
         public async Task<IActionResult> GetAllUsers(CancellationToken ct)
         {
             var user = await _userService.GetAllUsers(ct);

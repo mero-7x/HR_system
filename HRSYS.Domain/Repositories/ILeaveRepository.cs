@@ -6,7 +6,8 @@ namespace HRSYS.Domain.Repositories
 
     public interface ILeaveRepository : IGenericRepository<Leave>
     {
-        
-        Task<List<Leave>> GetLeavesByEmployeeIdAsync(int empd , CancellationToken ct);
+
+        Task<List<Leave>> GetLeavesByEmployeeIdAsync(int empd, CancellationToken ct);
+        Task<IEnumerable<Leave>> GetAllWithEmployeeAsync(CancellationToken ct);
     }
 }

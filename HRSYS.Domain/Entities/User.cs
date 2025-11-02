@@ -12,15 +12,11 @@ namespace HRSYS.Domain.Entities
         public string Username { get; set; } = null!;
         public string Password { get; set; } = null!;
         public Role Role { get; set; }  
-
         public int? EmployeeId { get; set; }
         // [ForeignKey(nameof(EmployeeId))]
         public Employee? Employee { get; set; }
-
-        
         public bool IsActive { get; set; } 
         public DateTime CreatedAt { get; set; } 
-
         public Department? ManagedDepartment { get; set; }
     }
 }

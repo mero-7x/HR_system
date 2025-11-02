@@ -39,44 +39,44 @@ namespace HRSYS.Application.Services
 
         public async Task<LeaveDto> CreateLeaveAsync(LeaveReqDto dto, CancellationToken ct)
         {
-           
+
             var userId = _currentUser.UserId;
             if (userId == null)
                 throw new UnauthorizedAccessException("User ID not found in current context.");
 
-            
+
             var user = await _userRepo.GetByIdWithEmployeeAsync(userId.Value, ct)
                 ?? throw new KeyNotFoundException("User not found.");
 
             var employee = user.Employee
                 ?? throw new KeyNotFoundException("Employee not found for this user.");
 
-       
+
             if (!user.IsActive)
                 throw new ValidationException("Inactive users cannot request leave.");
 
-         
+
             if (dto.StartDate.Date >= dto.EndDate.Date)
                 throw new ValidationException("End date must be after start date.");
 
             if (dto.StartDate.Date < DateTime.UtcNow.Date)
                 throw new ValidationException("Start date cannot be in the past.");
 
-         
+
             if (employee.DepartmentId == 0)
                 throw new ValidationException("Employee is not assigned to any department.");
 
-         
+
             if (employee.ManagerId == null)
                 throw new ValidationException("This employee does not have an assigned manager.");
 
-            
 
-        
+
+
             var leave = LeaveMapper.ToEntity(dto, ct);
             leave.EmployeeId = employee.Id;
             leave.Status = LeaveStatus.Pending;
-            
+
 
             await _LeaveRepo.AddAsync(leave, ct);
             await _unitofWork.SaveChangesAsync(ct);
@@ -138,6 +138,33 @@ namespace HRSYS.Application.Services
             await _unitofWork.SaveChangesAsync(ct);
             return true;
         }
+
+
+        public async Task<PagedResult<LeaveDto>> GetLeavesAsync(LeaveStatus? status, int pageNumber, int pageSize, CancellationToken ct)
+        {
+            var query = await _LeaveRepo.GetAllWithEmployeeAsync(ct);
+
+            if (status.HasValue)
+                query = query.Where(l => l.Status == status.Value);
+
+            var totalCount = query.Count();
+
+            var leaves = query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var result = leaves.Select(l => LeaveMapper.ToDto(l, ct)).ToList();
+
+            return new PagedResult<LeaveDto>
+            {
+                Items = result,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
 
 
     }

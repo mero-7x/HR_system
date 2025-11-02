@@ -15,7 +15,7 @@ namespace HRSYS.Domain.Entities
         public int ServiceInYears { get; set; }
         public Gender Gender { get; set; }
         public decimal BaseSalary { get; set; }
-        // public Role Role { get; set; }
+        
         public User? User { get; set; }
         
         public DateTime CreatedAt { get; set; }

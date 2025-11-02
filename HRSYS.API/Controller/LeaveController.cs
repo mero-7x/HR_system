@@ -4,6 +4,7 @@ using HRSYS.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using HRSYS.Domain.Enums;
 
 namespace HRSYS.API.Controllers
 {
@@ -18,49 +19,34 @@ namespace HRSYS.API.Controllers
             _service = service;
         }
 
-        // 🟢 1) يقدم الموظف طلب إجازة
+      
         [HttpPost]
         [Authorize(Roles = "Employee")]
-        public async Task<IActionResult> CreateLeave([FromBody] LeaveReqDto dto , CancellationToken ct)
+        public async Task<IActionResult> CreateLeave([FromBody] LeaveReqDto dto, CancellationToken ct)
         {
-            var leave = await _service.CreateLeaveAsync(dto,  ct);
+            var leave = await _service.CreateLeaveAsync(dto, ct);
             return Ok(leave);
         }
 
-     
-        // [HttpGet]
-        // [Authorize(Roles = "HR,Manager")]
-        // public async Task<IActionResult> GetLeaves([FromQuery] LeavePaginationParams query, CancellationToken ct)
-        // {
-        //     var result = await _service.GetPagedAsync(query, ct);
-        //     return Ok(result);
-        // }
-
-        
         [HttpPut("{id}/approve")]
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> ApproveOrRejectLeave(int id, [FromBody] ApproveLeaveDto dto, CancellationToken ct)
         {
-            
+
             dto.Id = id;
-
-            
-            // var mgrClaim =
-            //     User.FindFirst("EmployeeId") ??
-            //     User.FindFirst(ClaimTypes.NameIdentifier) ??
-            //     User.FindFirst("id");
-
-            // if (mgrClaim is null)
-            //     return Unauthorized(new { message = "Missing manager id claim." });
-
-            // if (!int.TryParse(mgrClaim.Value, out var managerId))
-            //     return Unauthorized(new { message = "Invalid manager id claim." });
-
-            
-            await _service.ApproveOrRejectLeave( dto, ct);
+            await _service.ApproveOrRejectLeave(dto, ct);
 
 
             return Ok(new { message = "its done" });
         }
+
+        [HttpGet]
+        [Authorize(Roles = "HR, Manager")]
+        public async Task<IActionResult> GetLeaves([FromQuery] LeaveStatus? status, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken ct = default)
+        {
+            var result = await _service.GetLeavesAsync(status, pageNumber, pageSize, ct);
+            return Ok(result);
+        }
+
     }
 }

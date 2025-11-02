@@ -22,6 +22,15 @@ namespace HRSYS.API.Middleware
             try
             {
                 await _next(context);
+                if (context.Response.StatusCode == (int)HttpStatusCode.Forbidden && !context.Response.HasStarted)
+                {
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        status = 403,
+                        message = " Access denied: Only HR members can access this endpoint."
+                    });
+                }
             }
             catch (AccountDisabledException ex)
             {

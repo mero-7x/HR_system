@@ -25,6 +25,7 @@ namespace HRSYS.API.Controllers
         }
 
         [HttpGet("{id}")]
+         [Authorize(Roles = "HR")]
         public async Task<IActionResult> GetById(int id, CancellationToken ct)
         {
             var result = await _service.GetByIdAsync(id, ct);
@@ -40,9 +41,10 @@ namespace HRSYS.API.Controllers
 
         }
 
-       
+
 
         [HttpDelete("{id}")]
+         [Authorize(Roles = "HR")]
         public async Task<IActionResult> Delete(int id, CancellationToken ct)
         {
             await _service.DeleteAsync(id, ct);

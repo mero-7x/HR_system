@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HRSYS.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b5dca8910c8af28f819a2e1f5e36b5af2f8a88e6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+473e395e788a398a2ffd4a0346c8c7901efcf017")]
 [assembly: System.Reflection.AssemblyProductAttribute("HRSYS.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HRSYS.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
